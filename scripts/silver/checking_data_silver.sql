@@ -77,3 +77,33 @@ from silver.crm_cust_info
 
 select distinct cst_maritalstatus
 from bronze.crm_cust_info
+
+/*==================================================
+    CLEANING IN crm_prd_info FILE *
+    ===================================================*/
+-- check for null or duplicates in primary key
+select 
+prd_id,
+count(*)
+from bronze.crm_prd_info
+group by prd_id
+having count(*) > 1 or prd_id is null
+select * from bronze.crm_prd_info
+-- check fo unwanted spaces
+select prd_nm
+from bronze.crm_prd_info
+where prd_nm != trim(prd_nm)
+
+-- check for null or negative no is cost
+select prd_cost
+from bronze.crm_prd_info
+where prd_cost < 0 or prd_cost is null
+
+-- data standardization and consistency(checking for low cardinality)
+select distinct prd_line
+from bronze.crm_prd_info
+
+-- check for invalid date oredrs
+select *
+from bronze.crm_prd_info
+where prd_end_dt < prd_start_dt
